@@ -1,0 +1,165 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+%matplotlib inline
+df=pd.read_csv(r'C:\Users\DELL\Desktop\Titanic\train.csv')
+df.head()
+#Checking any missed values in 'Survived' column
+df.Survived.isnull().value_counts()
+#found 'zero' missed values
+#Checking any missed values in 'Pclass' column
+df.Pclass.isnull().value_counts()
+#found 'zero' missed values
+#Checking any missed values in 'Sex' column
+df.Sex.isnull().value_counts()
+#found 'zero' missed values
+#Checking missed values in 'Age' column
+df.Age.isnull().value_counts()
+#found 177 nulls
+df.Age.describe()
+#We can replace theese nulls with 'Average' values, to do this, perform scaling on 'Age' column
+df.Age.fillna(37,inplace=True)
+#def scaling functions
+def scaling(x):
+    return x/max(x)
+# we are choosing above technique, since scaled values willbe in between 0 and 1
+df.Age=scaling(df.Age)
+#now we can cross check in df
+df.head()
+#from below table, we can confirm that scaling is performed on 'Age' column
+#Checking any missed values in 'Survived' column
+df.Survived.isnull().value_counts()
+#found 'Embarked "S"' with many times so replacing missed vakues with 'S'
+df.Embarked.fillna('S',inplace=True)
+#now we will crosscheck
+df.Embarked.isnull().value_counts()
+#now found 'zero' missed values
+#'Sex' column and 'Embarked' colummn values are in strings so we wil now convert into labels
+df.Sex=df.Sex.map({'male':0,'female':1})
+df.Embarked=df.Embarked.map({'C':0,'S':1,'Q':2})
+#now we will check df
+df.head()
+#in df, columns=['PassengerId','Name','Ticket','Fare','Cabin'] will not carry any weightage 
+#so we will drop theese columns from df
+df.drop(columns=['PassengerId','Name','Ticket','Fare','Cabin'],axis=1,inplace=True)
+#lets crosscheck once
+df.head()
+#lets keep surived as target,so keep in separate df
+df1=df.Survived
+df1.head()
+#lets drop Survived column in df
+df.drop(columns=['Survived'],axis=1,inplace=True)
+#inputs are in df
+df.head()
+#lets assume x=df and y=df1
+x=df
+y=df1
+------------------------------------------------------------
+#now taking test_set data given by kaggle for predictions
+df2=pd.read_csv(r'C:\Users\DELL\Desktop\Titanic\test.csv')
+df2.head()
+#found 'zero' missed values
+#Checking any missed values in 'Pclass' column
+df2.Pclass.isnull().value_counts()
+#found 'zero' missed values
+#Checking any missed values in 'Sex' column
+df2.Sex.isnull().value_counts()
+#found 'zero' missed values
+#Checking missed values in 'Age' column
+df2.Age.isnull().value_counts()
+#no nulls found in 'Age' column
+df2.Age.describe()
+#replace null vaues with mean
+df2.Age.fillna(30,inplace=True)
+#apply scaling on 'Age'
+df2.Age=scaling(df2.Age)
+#now we can cross check in df
+df2.head()
+#from below table, we can confirm that scaling is performed on 'Age' column
+#Checking any missed values in 'Survived' column
+df2.Embarked.isnull().value_counts()
+#found 'two' missed values
+#Checking detailed number of Embarked value counts
+df2.Embarked.value_counts()
+#found 'Embarked "S"' with many times so replacing missed vakues with 'S'
+df2.Embarked.fillna('S',inplace=True)
+#now we will crosscheck
+df2.Embarked.isnull().value_counts()
+#now found 'zero' missed values
+#'Sex' column and 'Embarked' colummn values are in strings so we wil now convert into labels
+df2.Sex=df2.Sex.map({'male':0,'female':1})
+df2.Embarked=df2.Embarked.map({'C':0,'S':1,'Q':2})
+#now we will check df
+df2.head()
+#in df, columns=['PassengerId','Name','Ticket','Fare','Cabin'] will not carry any weightage 
+#so we will drop theese columns from df
+df2.drop(columns=['PassengerId','Name','Ticket','Fare','Cabin'],axis=1,inplace=True)
+#lets crosscheck once
+df2.head()
+
+#lets use sklearn.train_test split,keep 20% data test_set
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=13)
+
+#lets import logistic regression library and accuracy function first
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+model=LogisticRegression()
+knowledge=model.fit(x_train,y_train)
+ycap=model.predict(x_test)
+accuracy=accuracy_score(y_test,ycap)
+print(accuracy)
+pridictions=model.predict(df2)
+print(predictions)
+----------------------------------------------------
+#lets import LogisticRegressionlibrary and accuracy function first
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+model=LogisticRegression()
+knowledge=model.fit(x_train,y_train)
+ycap=model.predict(x_test)
+accuracy=accuracy_score(y_test,ycap)
+print(accuracy)
+pridictions=model.predict(df2)
+print(predictions)
+----------------------------------------
+#checking with GaussianNB
+from sklearn.naive_bayes import GaussianNB
+model=GaussianNB()
+model.fit(x_train,y_train)
+ycap=model.predict(x_test)
+accuracy_score(ycap,y_test)
+print(accuracy)
+pridictions=model.predict(df2)
+print(predictions)
+
+-------------------------------------------
+#checking with DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
+model=DecisionTreeClassifier()
+model.fit(x_train,y_train)
+ycap=model.predict(x_test)
+accuracy_score(ycap,y_test)
+print(accuracy)
+pridictions=model.predict(df2)
+print(predictions)
+-------------------------------
+#checking with SVC
+from sklearn.svm import SVC
+model=SVC()
+model.fit(x_train,y_train)
+ycap=model.predict(x_test)
+accuracy_score(ycap,y_test)
+print(accuracy)
+pridictions=model.predict(df2)
+print(predictions)
+-------------------------
+#checking with RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
+model=DecisionTreeClassifier()
+model.fit(x_train,y_train)
+ycap=model.predict(x_test)
+accuracy_score(ycap,y_test)
+print(accuracy)
+pridictions=model.predict(df2)
+print(predictions)
